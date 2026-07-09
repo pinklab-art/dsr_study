@@ -8,6 +8,10 @@ ROS2(Jazzy)에서 제어하는 패키지입니다.
 ROS2 서비스 `/dsr01/gripper/cmd` 하나로 감싸줍니다.
 
 ## 구성
+| 경로 | 내용 |
+|--------|------|
+| `DSR_ROBOT2.py` | doosan-robot2 라이브러리 **수정본** (아래 "DSR_ROBOT2.py 패치" 참고) |
+
 | 패키지 | 내용 |
 |--------|------|
 | `dsr_gripper_interfaces` | 서비스 정의 `GripperCmd.srv` (ament_cmake) |
@@ -69,5 +73,17 @@ gripper_cmd(375, current=200)  # 임의 위치
   (position 0=닫힘, 750=열림)에 맞춥니다.
 - `current`(Goal Current) = 힘 제한. 전류기반 위치제어라 물체를 만나면 그 힘으로 잡고 멈춥니다.
 
+## DSR_ROBOT2.py 패치 (doosan-robot2 버그 수정본)
+`DSR_ROBOT2.py` 는 doosan-robot2(jazzy)의 동명 파일을 **수정한 것**입니다.
+그리퍼 자체와는 무관하지만, 실기에서 겪은 두 가지 버그를 고쳐 함께 둡니다.
+
+1. **srv 클래스명 오타** — 존재하지 않는 `SetSingularityHandlingForce` → 실제 이름 `SetSingularHandlingForce` (import 시 NameError)
+2. **서비스 접두사 누락** — `_srv_name_prefix = ''` → `'dsr_controller2/'` (set_robot_mode "service not available")
+
+적용: 원본 `~/doosan_ws/src/doosan-robot2/dsr_common2/imp/DSR_ROBOT2.py` 에 덮어쓴 뒤 `colcon build` → `source install/setup.bash`.
+
+> 이 파일은 Doosan Robotics의 Apache License 2.0 소스를 수정한 것이며, 원 저작권/라이선스 헤더는 그대로 유지합니다.
+
 ## 라이선스
-Apache License 2.0
+- `dsr_gripper`, `dsr_gripper_interfaces` : Apache License 2.0 (본 저장소 저작물)
+- `DSR_ROBOT2.py` : © Doosan Robotics, Apache License 2.0 (수정본)
